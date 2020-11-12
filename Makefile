@@ -1,5 +1,5 @@
 # variables
-COMPILER=gfortran
+COMPILER=/export/apps/gcc-10.1.0/bin/gfortran
 JF_LIBRARIES=-L./statics/json_fortran/lib 
 JF_INCLUDE=-I./statics/json_fortran/include/ 
 JF_EXTRA=./statics/json_fortran/lib/libjsonfortran.a
