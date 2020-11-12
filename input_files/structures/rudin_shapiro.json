@@ -1,0 +1,53 @@
+{
+    "job" : "generate_structure",
+
+    "name" : "rudin_shapiro",
+
+    "structure": {
+        "type" : "rudin_shapiro",
+        "nr" : 22,
+        "lambda" : 1.5e-6,
+        "n" : 3,
+        "eps_2" : 1.0,
+        "complement": true,
+
+        "substructure": {
+            "type": "circle_center",
+            "factor_radio" : 0.2, 
+            "eps_1" : 8.9
+        },
+
+        "background": {
+            "type": "bravais_moire",
+            "r": 3,
+            "s": 1,
+            "units": 1e-6,
+
+            "rotated" : {
+                "type": "circles",
+                "factor_radio" : 0.05,
+                "eps_1" : 8.9
+            },
+    
+            "not_rotated" : {
+                "type": "regular_polygons",
+                "factor_side" : 0.05,
+                "nsides": 3,
+                "eps_1" : 8.9
+            }
+        }
+    },
+
+    "saving": {
+        "structure" : {
+            "status" : true,
+            "id_file" : "number1"
+        }
+    },
+
+    "plots": {
+        "structure" : {
+            "status" : true
+        }
+    }
+}

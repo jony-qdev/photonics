@@ -1,0 +1,68 @@
+{
+    "job": "yee",
+    "subjob": "tm",
+
+    "name": "test1011",
+
+    "structure": {
+        "type" : "thue_morse",
+        "a" : 0.00223606797749979,
+        "n" : 1,
+        "nr" : 15,
+        "lambda" : 1.5e-3,
+        "eps_2" : 1.0,
+
+        "substructure": {
+            "type": "circle_center",
+            "radio": 0.0012157380083088357,
+            "eps_1": 13.43
+        }
+    },
+
+    "parameters" : {
+        "mu" : 1.0,
+
+        "k" : {
+            "path" : "rxmr",
+            "npoints" : 90
+        },
+
+        "dimensions" : {
+            "nt" : 65536
+        },
+
+        "frequencies_per_k" : 100
+    },
+
+    "source" : {
+        "type" : "gaussian_source",
+        "width" : 1e-25,
+        "start_time" : 0.5e-12,
+        "amplitude" : 5.0
+    },
+
+    "settings": {
+        "dispersion" :{
+            "setting_parameter": 1.001
+        }
+    },
+
+    "plots": {
+        "structure": {
+            "status": true
+        },
+
+        "dispersion": {
+            "status": true,
+            "xlim": [0.0, 3.0],
+            "ylim": [0.0, 0.8]
+        }
+    },
+
+    "saving": {
+        "structure": {
+            "status": true,
+            "id_file":"030"
+        }
+    }
+}

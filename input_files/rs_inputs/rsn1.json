@@ -1,0 +1,74 @@
+{
+    "job": "yee_gapmap",
+    "subjob": "tm",
+
+    "name": "rsn1",
+
+    "structure": {
+        "type" : "rudin_shapiro",
+        "a" : 4.5e-6,
+        "n" : 1,
+        "nr" : 22,
+        "lambda" : 1.5e-6,
+        "eps_2" : 1.0,
+
+        "substructure": {
+            "type": "regular_polygon_center",
+            "nsides": 4,
+            "polygon_angle_rotation": 45,
+            "eps_1": 12.25
+        }
+    },
+
+    "parameters" : {
+        "mu" : 1.0,
+
+        "filling_fraction": {
+            "start": 0.01, 
+            "finalize": 0.55,
+            "nfractions": 16
+        },
+
+        "k" : {
+            "path" : "rxmr",
+            "npoints" : 90
+        },
+
+        "dimensions" : {
+            "nt" : 65536
+        },
+
+        "frequencies_per_k" : 100
+    },
+
+    "source" : {
+        "type" : "gaussian_source",
+        "width" : 1e-25,
+        "start_time" : 0.5e-12,
+        "amplitude" : 5.0
+    },
+
+    "settings": {
+        "dispersion" :{
+            "setting_parameter": 1.001
+        }
+    },
+
+    "plots": {
+        "structure": {
+            "status": true
+        },
+
+        "dispersion": {
+            "status": true,
+            "xlim": [0, 3.0],
+            "ylim": [0.0, 1]
+        }
+    },
+
+    "saving": {
+        "structure": {
+            "status": true
+        }
+    }
+}

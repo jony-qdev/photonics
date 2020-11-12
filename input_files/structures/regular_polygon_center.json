@@ -1,0 +1,31 @@
+{
+    "job" : "generate_structure",
+
+    "name" : "regular_polygon_center",
+
+    "structure": {
+        "type" : "regular_polygon_center",
+        "a" : 1.0e-6,
+        "b" : 1.0e-6,
+        "nr" : 50,
+        "lambda" : 1.5e-6,
+        "side" : 0.2e-6,
+        "nsides" : 4,
+        "polygon_angle_rotation": 45,
+        "eps_1" : 8.9,
+        "eps_2" : 1.0
+    },
+
+    "saving": {
+        "structure" : {
+            "status" : true,
+            "id_file" : "number1"
+        }
+    },
+
+    "plots": {
+        "structure" : {
+            "status" : true
+        }
+    }
+}

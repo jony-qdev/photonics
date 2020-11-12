@@ -1,0 +1,70 @@
+{
+    "job": "yee",
+    "subjob": "tm",
+
+    "name": "test_yee",
+
+    "structure": {
+        "type" : "rudin_shapiro",
+        "a" : 4.5e-6,
+        "n" : 1,
+        "nr" : 22,
+        "lambda" : 1.5e-6,
+        "eps_2" : 1.0,
+
+        "substructure": {
+            "type": "regular_polygon_center",
+            "nsides": 4,
+            "polygon_angle_rotation": 45,
+            "eps_1": 12.25,
+            "side": 9.41242604E-07
+        }
+    },
+
+    "parameters" : {
+        "mu" : 1.0,
+
+        "k" : {
+            "path" : "rxmr",
+            "npoints" : 90,
+            "add_to_kpath": 1
+        },
+
+        "dimensions" : {
+            "nt" : 65536
+        },
+
+        "frequencies_per_k" : 100
+    },
+
+    "source" : {
+        "type" : "gaussian_source",
+        "width" : 1e-25,
+        "start_time" : 0.5e-12,
+        "amplitude" : 5.0
+    },
+
+    "settings": {
+        "dispersion" :{
+            "setting_parameter": 1.001
+        }
+    },
+
+    "plots": {
+        "structure": {
+            "status": true
+        },
+
+        "dispersion": {
+            "status": true,
+            "xlim": [1.0, 4.0],
+            "ylim": [0.0, 0.8]
+        }
+    },
+
+    "saving": {
+        "structure": {
+            "status": true
+        }
+    }
+}

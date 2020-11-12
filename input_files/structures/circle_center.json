@@ -1,0 +1,29 @@
+{
+    "job" : "generate_structure",
+
+    "name" : "circle_center",
+
+    "structure": {
+        "type" : "circle_center",
+        "a" : 1.0e-6,
+        "b" : 1.0e-6,
+        "nr" : 50,
+        "lambda" : 1.5e-6,
+        "radio" : 0.2e-6,
+        "eps_1" : 8.9,
+        "eps_2" : 1.0
+    },
+
+    "saving": {
+        "structure" : {
+            "status" : true,
+            "id_file" : "number1"
+        }
+    },
+
+    "plots": {
+        "structure" : {
+            "status" : true
+        }
+    }
+}

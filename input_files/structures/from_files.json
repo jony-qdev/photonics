@@ -1,0 +1,38 @@
+{
+    "job" : "generate_structure",
+
+    "name" : "from_files",
+
+    "structure": {
+        "type" : "from_files",
+        "a" : 6.324555320336759e-6,
+        "b" : 6.324555320336759e-6,
+        "nr" : 50,
+        "lambda" : 1.5e-6,
+        "files": ["input_files/files/centersr3s1tipo1nr.txt", "input_files/files/centersr3s1tipo1r.txt"],
+        "sides/radios" : [0.18973665961010278e-6, false],
+        "factors": [false, 0.03],
+        "nsides": [false, 4],
+        "angles_rotation": [false, 45],
+        "eps_1" : [8.9, 15],
+        "eps_2" : 1.0,
+
+        "random_movement": {
+            "min_percentage": 1,
+            "max_percentage": 5
+        }
+    },
+
+    "saving": {
+        "structure" : {
+            "status" : true,
+            "id_file" : "number1"
+        }
+    },
+
+    "plots": {
+        "structure" : {
+            "status" : true
+        }
+    }
+}

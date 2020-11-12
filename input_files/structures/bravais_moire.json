@@ -1,0 +1,44 @@
+{
+    "job" : "generate_structure",
+
+    "name" : "bravais_moire",
+
+    "structure": {
+        "type" : "bravais_moire",
+        "nr" : 70,
+        "lambda" : 1.5e-6,
+        "r": 3,
+        "s": 1,
+        "units": 1e-6,
+        "eps_2" : 1.0,
+
+        "angle_rotation": 3,
+
+        "rotated" : {
+            "type": "circles",
+            "factor_radio" : 0.04,
+            "eps_1" : 8.9
+        },
+
+        "not_rotated" : {
+            "type": "regular_polygons",
+            "factor_side" : 0.04,
+            "nsides": 4,
+            "eps_1" : 8.9,
+            "angle_rotation": 45
+        }
+    },
+
+    "saving": {
+        "structure" : {
+            "status" : true,
+            "id_file" : "number1"
+        }
+    },
+
+    "plots": {
+        "structure" : {
+            "status" : true
+        }
+    }
+}

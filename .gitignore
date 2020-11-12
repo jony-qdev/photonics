@@ -1,0 +1,11 @@
+*.mod
+*.out
+*.dat
+*.png
+*.exe
+*.o 
+statics/json_fortran
+*.plt
+*.txt
+*.info
+wdir/*

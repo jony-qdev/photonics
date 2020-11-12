@@ -1,0 +1,59 @@
+{
+    "job": "yee_specific_values",
+    "subjob": "tm",
+
+    "name": "yee_specific_values",
+
+    "structure": {
+        "type" : "rudin_shapiro",
+        "a" : 1.0e-6,
+        "b" : 1.0e-6,
+        "n" : 3,
+        "nr" : 20,
+        "lambda" : 1.5e-6,
+        "eps_2" : 1.0,
+
+        "substructure": {
+            "type" : "regular_polygon_center",
+            "side" : 0.3e-6,
+            "nsides": 4,
+            "eps_1" : 12.25
+        }
+    },
+
+    "parameters" : {
+        "mu" : 1.0,
+
+        "specific_ks": [0.0, 1.0, 2.0],
+        "specific_frequencies": [0.363781, 0.363784, 0.3631911],
+
+        "dimensions" : {
+            "nt" : 4194304
+        },
+
+        "frequencies_per_k" : 100
+    },
+
+    "source" : {
+        "type" : "gaussian_source",
+        "width" : 1e-25,
+        "start_time" : 0.5e-12,
+        "amplitude" : 5.0
+    },
+
+    "plots": {
+        "structure": {
+            "status": true
+        },
+
+        "field_profile": {
+            "status": true
+        }
+    },
+
+    "saving": {
+        "structure": {
+            "status": true
+        }
+    }
+}
