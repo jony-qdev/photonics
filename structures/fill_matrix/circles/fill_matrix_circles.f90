@@ -37,7 +37,16 @@ module fill_matrix_circles
             do k = 1, size(centers_structure, 1)
 
                 ! validate that centers is a circle
-                if (int(centers_structure(k, 2)) /= 1) call error_message('Bad centers, verify')
+                if (int(centers_structure(k, 2)) /= 1) then 
+                    
+                    if (rank == 0) then 
+                        call error_message('Bad centers, verify')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if 
+
 
                 ! points in circle
                 nvalid_points = 0
@@ -56,8 +65,15 @@ module fill_matrix_circles
                 end do 
                 
                 ! validate points in circle
-                if (nvalid_points < int(centers_structure(k, 2))) &
-                    call error_message('nr is too small or center outside the structure')
+                if (nvalid_points < int(centers_structure(k, 2))) then 
+
+                    if (rank == 0) then 
+                        call error_message('nr is too small or center outside the structure')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if 
 
             end do 
 

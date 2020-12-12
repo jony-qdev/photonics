@@ -5,20 +5,14 @@
     "name": "test_yee",
 
     "structure": {
-        "type" : "rudin_shapiro",
-        "a" : 4.5e-6,
-        "n" : 2,
-        "nr" : 22,
+        "type" : "circle_center",
+        "a" : 1.0e-6,
+        "b" : 1.0e-6,
+        "nr" : 20,
         "lambda" : 1.5e-6,
-        "eps_2" : 1.0,
-
-        "substructure": {
-            "type": "regular_polygon_center",
-            "nsides": 4,
-            "polygon_angle_rotation": 45,
-            "eps_1": 12.25,
-            "side": 9.41242604E-07
-        }
+        "radio" : 0.2e-6,
+        "eps_1" : 8.9,
+        "eps_2" : 1.0
     },
 
     "parameters" : {
@@ -31,7 +25,7 @@
         },
 
         "dimensions" : {
-            "nt" : 65536
+            "nt" : 4194304
         },
 
         "frequencies_per_k" : 100
@@ -46,7 +40,7 @@
 
     "settings": {
         "dispersion" :{
-            "setting_parameter": 1.001
+            "setting_parameter": 1.111
         }
     },
 

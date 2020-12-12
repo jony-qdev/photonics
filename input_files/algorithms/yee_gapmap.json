@@ -2,20 +2,14 @@
     "job": "yee_gapmap",
     "subjob": "tm",
 
-    "name": "yee",
+    "name": "yee_gapmap",
 
     "structure": {
-        "type" : "thue_morse",
-        "a" : 0.00223606797749979,
-        "n" : 1,
+        "type" : "circle_center",
+        "a" : 1e-6,
         "nr" : 15,
-        "lambda" : 1.5e-3,
-        "eps_2" : 1.0,
-
-        "substructure": {
-            "type": "circle_center",
-            "eps_1": 13.43
-        }
+        "lambda" : 1.5e-6,
+        "eps_1" : 8.9
     },
 
     "parameters" : {
@@ -26,6 +20,8 @@
             "finalize": 0.55,
             "nfractions": 30
         },
+
+        "minimum_width" : 0.1,
 
         "k" : {
             "path" : "rxmr",

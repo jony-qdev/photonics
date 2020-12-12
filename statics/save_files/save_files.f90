@@ -26,36 +26,44 @@ module save_files
         ! Returns:
         !   --| file with structure with columns --> i*dx, j*dy, matrix(i, j)
 
-        subroutine save_structure(path_file, matrix, nx, ny, dx, dy, space_each_x_opt)
+        subroutine save_structure(path_file, matrix, nx, ny, dx, dy, space_each_x_opt, rank_opt)
 
             ! inputs
             character(len=*), intent(in) :: path_file 
             real, dimension(:, :), intent(in) :: matrix 
             real, intent(in) :: dx, dy
             integer, intent(in) :: nx, ny 
+            integer, optional :: rank_opt
             logical, optional :: space_each_x_opt
 
             ! variables to use
-            integer :: i, j
+            integer :: i, j, ui = 100, rank
+
+            if (present(rank_opt)) then 
+                rank = rank_opt 
+                ui = 100 + rank
+            else 
+                rank = 0
+            end if 
 
             ! open file 
-            open(100, file=path_file)
+            open(ui, file=path_file)
 
                 ! traverse matrix and save in the file
                 do i = 1, nx 
                     do j = 1, ny 
 
-                        write(100, *) i * dx, j * dy, matrix(i, j)
+                        write(ui, *) i * dx, j * dy, matrix(i, j)
 
                     end do 
 
-                    if (present(space_each_x_opt)) write(100, *) ''
+                    if (present(space_each_x_opt)) write(ui, *) ''
 
                 end do
 
-            close(100)
+            close(ui)
 
-            call success_message('Generated '//path_file)
+            call success_message('Generated '//path_file, rank_opt=rank)
 
         end subroutine save_structure
 

@@ -124,7 +124,15 @@ module unit_cell
             end if 
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verify structure inputs')
+            if (.not. inputs_right) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if 
+
+            end if 
 
             ! get centers 
             centers(1, 1) = shape_param 

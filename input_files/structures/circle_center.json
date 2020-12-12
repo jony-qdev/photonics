@@ -6,10 +6,9 @@
     "structure": {
         "type" : "circle_center",
         "a" : 1.0e-6,
-        "b" : 1.0e-6,
-        "nr" : 50,
+        "nr" : 500,
         "lambda" : 1.5e-6,
-        "radio" : 0.2e-6,
+        "factor_radio" : 0.3,
         "eps_1" : 8.9,
         "eps_2" : 1.0
     },

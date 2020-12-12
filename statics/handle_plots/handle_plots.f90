@@ -21,9 +21,17 @@ module handle_plots
         ! Returns:
         !   --| file in png with structure and gnuplot file to execute and generate this image
 
-        subroutine plot_structure(path_file, path_plot)
+        subroutine plot_structure(path_file, path_plot, rank_opt)
 
             character(len=*), intent(in) :: path_file, path_plot
+            integer, optional :: rank_opt 
+            integer rank
+
+            if(present(rank_opt)) then 
+                rank = rank_opt 
+            else 
+                rank = 0 
+            end if
 
             ! open file plt (gnuplot file)
             open(100, file=path_plot//'.plt')
@@ -41,13 +49,13 @@ module handle_plots
             close(100)
 
             ! message of success plt file
-            call success_message('Generated '//trim(path_plot)//'.plt')
+            call success_message('Generated '//trim(path_plot)//'.plt', rank_opt=rank)
 
             ! execute gnuplot file to generate png image
             call execute_command_line("gnuplot -p '"//trim(path_plot)//".plt'")
 
             ! message of success png file
-            call success_message('Generated '//trim(path_plot)//'.png')
+            call success_message('Generated '//trim(path_plot)//'.png', rank_opt=rank)
 
         end subroutine plot_structure
 
@@ -77,6 +85,10 @@ module handle_plots
 
                 if (present(xlim_opt)) write(100, *) 'set xrange [', xlim_opt(1), ':', xlim_opt(2),']'
                 if (present(ylim_opt)) write(100, *) 'set yrange [', ylim_opt(1), ':', ylim_opt(2),']'
+
+                write(100, *) 'set grid'
+                write(100, *) 'set ylabel "Frequency"'
+                write(100, *) 'set xlabel "K Values"'
 
                 write(100, *) "plot '"//path_file//"' with points pt 7"
 

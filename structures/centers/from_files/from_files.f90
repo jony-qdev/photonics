@@ -85,7 +85,15 @@ module from_files
                     shape_params = [(0.0, i = 1, size(files))]
 
                     call json%get('structure'//source_data//'.factors', factors, is_found)
-                    if (.not. is_found) call error_message('sides/radios or factors is required')
+
+                    if (.not. is_found) then 
+                        if (rank == 0) then 
+                            call error_message('sides/radios or factors is required')
+                        else 
+                            call exit(0)
+                        end if 
+
+                    end if
 
                 else 
                     
@@ -101,7 +109,15 @@ module from_files
             end if 
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verify structure inputs')
+            if (.not. inputs_right) then 
+
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if 
+
+            end if
             
             do i = 1, size(files) 
                 if (valid_points_params(i) == 0) valid_points_params(i) = 1

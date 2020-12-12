@@ -22,15 +22,23 @@ module handle_messages
         ! Returns:
         !   --| message in terminal and in photonics.log and finish of the program
 
-        subroutine error_message(message)
+        subroutine error_message(message, rank_opt)
 
             character(len=*), intent(in) :: message 
+            integer, optional :: rank_opt 
+            integer :: rank
+
+            if (present(rank_opt)) then 
+                rank = rank_opt
+            else 
+                rank = 0
+            end if 
 
             write(*, *) ''
-            write(200, *) ''
+            write(200 + rank, *) ''
 
             write(*, *) 'Error: '//message
-            write(200, *) 'Error: '//message
+            write(200 + rank, *) 'Error: '//message
 
             ! exit program
             call exit(0)
@@ -44,18 +52,26 @@ module handle_messages
         ! Returns:
         !   --| message in terminal and in photonics.log
 
-        subroutine info_message(message)
+        subroutine info_message(message, rank_opt)
 
             character(len=*), intent(in) :: message 
+            integer, optional :: rank_opt 
+            integer :: rank
+
+            if (present(rank_opt)) then 
+                rank = rank_opt
+            else 
+                rank = 0
+            end if 
 
             ! verify status
             if (status /= 1) then 
                 write(*, *) ''
-                write(200, *) ''
+                write(200 + rank, *) ''
             end if 
 
             write(*, *) 'Info: '//message
-            write(200, *) 'Info: '//message
+            write(200 + rank, *) 'Info: '//message
 
             ! update status
             status = 1
@@ -69,18 +85,26 @@ module handle_messages
         ! Returns:
         !   --| message in terminal and in photonics.log
 
-        subroutine success_message(message)
+        subroutine success_message(message, rank_opt)
 
             character(len=*), intent(in) :: message 
+            integer, optional :: rank_opt 
+            integer :: rank
+
+            if (present(rank_opt)) then 
+                rank = rank_opt
+            else 
+                rank = 0
+            end if 
 
             ! verify status 
             if (status /= 2) then 
                 write(*, *) ''
-                write(200, *) ''
+                write(200 + rank , *) ''
             end if 
 
             write(*, *) 'Success: '//message
-            write(200, *) 'Success: '//message
+            write(200 + rank, *) 'Success: '//message
 
             ! update status 
             status = 2
@@ -94,18 +118,26 @@ module handle_messages
         ! Returns:
         !   --| message in terminal and in photonics.log
 
-        subroutine flat_message(message)
+        subroutine flat_message(message, rank_opt)
 
             character(len=*), intent(in) :: message 
+            integer, optional :: rank_opt 
+            integer :: rank
+
+            if (present(rank_opt)) then 
+                rank = rank_opt
+            else 
+                rank = 0
+            end if 
 
             ! verify status 
             if (status /= 3) then 
                 write(*, *) '' 
-                write(200, *) '' 
+                write(200 + rank, *) '' 
             end if 
 
             write(*, *) message 
-            write(200, *) message
+            write(200 + rank, *) message
 
             ! update status 
             status = 3

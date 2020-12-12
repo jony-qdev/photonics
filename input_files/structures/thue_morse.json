@@ -5,7 +5,8 @@
 
     "structure": {
         "type" : "thue_morse",
-        "nr" : 30,
+        "a": 6.3e-6,
+        "nr" : 20,
         "lambda" : 1.5e-6,
         "n" : 2,
         "eps_2" : 1.0,
@@ -17,23 +18,10 @@
         },
 
         "background": {
-            "type": "bravais_moire",
-            "r": 3,
-            "s": 1,
-            "units": 1e-6,
-
-            "rotated" : {
-                "type": "circles",
-                "factor_radio" : 0.05,
-                "eps_1" : 8.9
-            },
-    
-            "not_rotated" : {
-                "type": "regular_polygons",
-                "factor_side" : 0.05,
-                "nsides": 3,
-                "eps_1" : 8.9
-            }
+            "type": "regular_polygon_center",
+            "side": 1e-6,
+            "nsides": 4,
+            "eps_1": 5
         }
     },
 

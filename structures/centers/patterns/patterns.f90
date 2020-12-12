@@ -47,7 +47,34 @@ module patterns
             call json%get('structure.background.type', background_type, has_background)
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verifya structure inputs')
+            if (.not. inputs_right) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verifya structure inputs')
+                else 
+                    call exit(0)
+                end if 
+
+            end if 
+
+            ! verify n
+            if (structure_type == 'rudin_shapiro' .and. n < 1) then 
+
+                if (rank == 0) then 
+                    call error_message('Verify n of rudin shapiro')
+                else 
+                    call exit(0)
+                end if
+ 
+            else if(structure_type == 'thue_morse' .and. n < 0) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify n of thue morse')
+                else 
+                    call exit(0)
+                end if
+
+            end if 
 
             ! verify if bravais moire is here
             if (substructure_type == 'bravais_moire') then 
@@ -96,7 +123,15 @@ module patterns
             end if 
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verify structure inputs')
+            if (.not. inputs_right) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if 
+
+            end if
 
             ! define nx, ny, dx and dy 
             nx = ceiling(side_x / (lambda / nr))
@@ -127,7 +162,11 @@ module patterns
 
                 case default 
 
-                    call error_message('Substructure type does not exist')
+                    if (rank == 0) then 
+                        call error_message('Substructure type does not exist')
+                    else 
+                        call exit(0)
+                    end if
 
                 end select 
 
@@ -156,7 +195,11 @@ module patterns
 
                 case default 
 
-                    call error_message('Background type does not exist')
+                    if (rank == 0) then 
+                        call error_message('Background type does not exist')
+                    else 
+                        call exit(0)
+                    end if
 
                 end select 
 

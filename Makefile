@@ -1,15 +1,15 @@
 # variables
-COMPILER=gfortran
+COMPILER=mpif90
 JF_LIBRARIES=-L./statics/json_fortran/lib 
 JF_INCLUDE=-I./statics/json_fortran/include/ 
 JF_EXTRA=./statics/json_fortran/lib/libjsonfortran.a
 
 
 # compile and generate output executable
-all : photonics.out clean 
+all : photonics.exe clean 
 
-photonics.out: photonics.f90 global_elements.o centers_functions.o fill_matrix_functions.o algorithms.o
-		$(COMPILER) $(JF_INCLUDE) $(JF_LIBRARIES) -o photonics.out photonics.f90 \
+photonics.exe: photonics.f90 global_elements.o centers_functions.o fill_matrix_functions.o algorithms.o
+		$(COMPILER) $(JF_INCLUDE) $(JF_LIBRARIES) -o photonics.exe photonics.f90 \
 			centers_functions.o unit_cell.o bravais_moire.o from_files.o patterns.o \
 			fill_matrix_functions.o fill_matrix_circles.o fill_matrix_regular_polygons.o \
 			statics.o handle_messages.o handle_strings.o save_files.o handle_plots.o constants.o fast_fourier_transform.o rotations.o math_utils.o pattern_structures.o \

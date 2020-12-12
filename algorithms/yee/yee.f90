@@ -45,8 +45,8 @@ module yee
             complex :: rotate_x, rotate_y
             real :: mu, k_add, dt, mu_x, mu_y, freq, omega, t, kx, ky,  re_rotate_x, im_rotate_x, re_rotate_y, im_rotate_y
             real, dimension(:), allocatable :: array_ks, array_frequencies, xlim, ylim
-            real, dimension(:, :), allocatable :: matrix_eps_x, matrix_eps_y, matrix_dispersion, matrix_kvalues
-            integer :: nt, nfreqs, k_npoints, k, q
+            real, dimension(:, :), allocatable :: matrix_eps_x, matrix_eps_y, matrix_dispersion, matrix_disp_local, matrix_kvalues
+            integer :: nt, nfreqs, k_npoints, k, q, k_npoints_local, i, diff_k_npoints
             logical :: is_found, inputs_right, to_plot, has_xlim, has_ylim
             character(len=:), allocatable :: source_type, subjob, id_file, path_file, path_plot
             character(len=5) :: str_k, str_freq
@@ -79,22 +79,49 @@ module yee
                 call json%get('parameters.k.npoints', k_npoints, is_found); if (.not. is_found) inputs_right = .false.
                 call json%get('parameters.k.add_to_kpath', k_add, is_found); if(.not. is_found) k_add = 0.0
 
+                k_npoints_local = ceiling(k_npoints / float(nprocs))
+                k_npoints = nprocs * k_npoints_local
+                diff_k_npoints = 0
+
             case ('yee_specific_values')
 
                 call json%get('parameters.specific_ks', array_ks, is_found); if (.not. is_found) inputs_right = .false.
                 call json%get('parameters.specific_frequencies', array_frequencies, is_found); &
                     if (.not. is_found) inputs_right = .false.
 
-                if (size(array_ks) /= size(array_frequencies)) call error_message('specific_ks and specific_frequencies &
-                                                                                    should be have the same size')
+                if (size(array_ks) /= size(array_frequencies)) then 
+                    
+                    if (rank == 0) then 
+                        call error_message('specific_ks and specific_frequencies & should be have the same size')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if 
 
                 ! calculate variables
                 k_npoints = size(array_ks)
+                k_npoints_local = int(k_npoints / nprocs)
+
+                if (rank == nprocs - 1) then 
+                    diff_k_npoints = k_npoints - nprocs*k_npoints_local
+                    k_npoints_local = k_npoints_local + diff_k_npoints
+                else 
+                    diff_k_npoints = 0
+                end if 
 
             end select
             
             ! verify inputs
-            if (.not. inputs_right) call error_message('Verify inputs to yee') 
+            if (.not. inputs_right) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify inputs to yee') 
+                else 
+                    call exit(0)
+                end if 
+
+            end if
 
             ! get source inputs
             select case (source_type)
@@ -104,11 +131,24 @@ module yee
                 call json%get('source.start_time', start_time, is_found); if (.not. is_found) inputs_right = .false.
                 call json%get('source.amplitude', amplitude, is_found); if (.not. is_found) inputs_right = .false.
 
-                if (.not. inputs_right) call error_message('Verify inputs source yee') 
+                if (.not. inputs_right) then 
+                    
+                    if (rank == 0) then 
+                        call error_message('Verify inputs source yee') 
+                    else 
+                        call exit(0)
+                    end if 
+                
+                end if
+                    
 
             case default
 
-                call error_message('Source type does not exist')
+                if (rank == 0) then 
+                    call error_message('Source type does not exist')
+                else 
+                    call exit(0)
+                end if 
 
             end select 
 
@@ -129,7 +169,9 @@ module yee
             ! allocate
             allocate(matrix_eps_x(nx, ny), matrix_eps_y(nx, ny))
             allocate(matrix_z(nx, ny), matrix_x(nx, ny), matrix_y(nx, ny))
-            allocate(matrix_dispersion(k_npoints * nfreqs, 2))
+
+            if (rank == 0) allocate(matrix_dispersion(k_npoints * nfreqs, 2))
+            allocate(matrix_disp_local(k_npoints_local * nfreqs, 2))
 
             allocate(array_in_fft(nt))
 
@@ -158,8 +200,11 @@ module yee
 
             end if 
 
+            ! count of k position
+            i = 0
+
             ! calculate yee for each k
-            do k = 1, k_npoints 
+            do k = rank * (k_npoints_local - diff_k_npoints) + 1, rank * (k_npoints_local - diff_k_npoints) + k_npoints_local
 
                 ! calculate omega an freq
                 if (job == 'yee_specific_values') then 
@@ -215,7 +260,9 @@ module yee
 
                 if (job == 'yee' .or. job == 'yee_gapmap') then 
 
-                    call get_dispersion(matrix_dispersion, k, nt, dt, array_ks(k), nfreqs)
+                    call get_dispersion(matrix_disp_local, i, nt, dt, array_ks(k), nfreqs)
+
+                    i = i + 1
 
                 else 
 
@@ -227,7 +274,7 @@ module yee
                                 //trim(str_k)//'_freq_'//trim(str_freq)//'_profile_field_' &
                                 //trim(structure_type)//'_'//trim(id_file)//'.dat'
 
-                    call save_structure(path_file, real(matrix_z), nx, ny, dx, dy, space_each_x_opt=.true.)
+                    call save_structure(path_file, real(matrix_z), nx, ny, dx, dy, space_each_x_opt=.true., rank_opt=rank)
 
                     ! plot profile field
                     call json%get('plots.field_profile.status', to_plot, is_found); if(.not. is_found) to_plot = .false.
@@ -238,14 +285,41 @@ module yee
                                     //trim(str_k)//'_freq_'//trim(str_freq)//'_profile_field_' &
                                     //trim(structure_type)//'_'//trim(id_file)
 
-                        call plot_structure(path_file, path_plot)
+                        call plot_structure(path_file, path_plot, rank_opt=rank)
 
                     end if
                 end if 
 
             end do
 
-            if (job == 'yee' .or. job == 'yee_gapmap') then 
+            ! MPI Communication
+
+            if (job == 'yee') then 
+
+                ! MPI Gather kvalues
+                call MPI_Gather(matrix_disp_local(:, 1), &
+                                k_npoints_local * nfreqs, &
+                                MPI_REAL, & 
+                                matrix_dispersion(:, 1), &
+                                k_npoints_local * nfreqs, &
+                                MPI_REAL, &
+                                0, &
+                                MPI_COMM_WORLD, &
+                                ierr)
+
+                ! MPI Gather frequencies
+                call MPI_Gather(matrix_disp_local(:, 2), &
+                                k_npoints_local * nfreqs, &
+                                MPI_REAL, &
+                                matrix_dispersion(:, 2), &
+                                k_npoints_local * nfreqs, &
+                                MPI_REAL, &
+                                0, &
+                                MPI_COMM_WORLD, &
+                                ierr)
+            end if 
+
+            if ((job == 'yee' .or. job == 'yee_gapmap') .and. rank == 0) then 
             
                 ! save dispersion 
                 path_file = 'wdir/'//name_output_folder//'/yee_'//subjob//'_dispersion_' &
@@ -279,7 +353,7 @@ module yee
                     end if 
 
                 end if 
-            else 
+            else if (job == 'yee_specific_values') then 
 
                 ! deallocate
                 deallocate(array_frequencies)
@@ -287,7 +361,9 @@ module yee
             end if
 
             ! deallocate
-            deallocate(matrix_eps_x, matrix_eps_y, matrix_dispersion, matrix_kvalues)
+            if (rank == 0) deallocate(matrix_dispersion)
+            deallocate(matrix_disp_local)
+            deallocate(matrix_eps_x, matrix_eps_y, matrix_kvalues)
 	        deallocate(matrix_z, matrix_x, matrix_y)
 	        deallocate(array_in_fft, array_ks)
 
@@ -296,7 +372,7 @@ module yee
         ! Subroutine to calculate dispersion and get frequencies
         !
         ! Inputs : 
-        !   --- matrix_disperion: matrix, where we going to save the values of the dispersion
+        !   --- matrix_dispersion: matrix, where we going to save the values of the dispersion
         !   --- k: integer, counter of k values
         !   --- nt: integer, times in time
         !   --- kvalue: real, value of k 
@@ -305,14 +381,14 @@ module yee
         ! Returns:
         !   --- matrix_dispersion: matrix, with values filled
 
-        subroutine get_dispersion(matrix_dispersion, k, nt, dt, kvalue, nfreqs)
+        subroutine get_dispersion(matrix_disp_local, k, nt, dt, kvalue, nfreqs)
 
             ! inputs 
             integer, intent(in) :: k, nt, nfreqs
             real, intent(in) :: dt, kvalue
 
             ! outputs
-            real, dimension(:, :), intent(inout) :: matrix_dispersion
+            real, dimension(:, :), intent(inout) :: matrix_disp_local
             integer :: q, i
 
             ! to use
@@ -356,14 +432,9 @@ module yee
                     select case(structure_type)
 
                     case('thue_morse', 'rudin_shapiro')
-
-                        matrix_dispersion(i + (k - 1) * nfreqs, :) = [kvalue, &
-                            array_fnorm(q) * (side_x / 2 ** n) / (2.0 * PI * C)]
+                        matrix_disp_local(i + (k) * nfreqs, :) = [kvalue,  array_fnorm(q) * (side_x / 2 ** n) / (2.0 * PI * C)]
                     case default 
-
-                        matrix_dispersion(i + (k - 1) * nfreqs, :) = [kvalue, &
-                            array_fnorm(q) * side_x / (2.0 * PI * C)]
-
+                        matrix_disp_local(i + (k) * nfreqs, :) = [kvalue, array_fnorm(q) * side_x / (2.0 * PI * C)]
                     end select
                     
                     i = i + 1

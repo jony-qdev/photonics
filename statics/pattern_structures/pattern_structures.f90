@@ -2,8 +2,6 @@ module pattern_structures
 
     ! Module to get patterns of structures
 
-    use :: handle_messages
-
     implicit none 
 
     private 
@@ -30,8 +28,6 @@ module pattern_structures
 
             if (n == 0) then 
                 m = 1
-            else if (n < 0) then 
-                call error_message('n for thue morse fractal should be positive number')
             else
 
                 ! get pattern
@@ -63,8 +59,6 @@ module pattern_structures
             integer, dimension(:, :), allocatable :: matrix_init, aux
             integer, dimension(4) :: aa = [0, 0, 0, 1], ab = [0, 0, 1, 0], ba = [1, 1, 0, 1], bb = [1, 1, 1, 0]
             integer :: i, j, k, count
-
-            if (n < 1) call error_message("Verify n of Rudin-Shapiro")
 
             ! allocate
             allocate(matrix_init(2, 2))

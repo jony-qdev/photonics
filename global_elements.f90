@@ -1,6 +1,7 @@
 module global_elements
 
     use :: statics
+    use :: mpi
 
     implicit none 
 
@@ -13,6 +14,9 @@ module global_elements
     character(len=:), allocatable :: name_execution, name_output_folder, job
     character(len=10) :: id_execution
     integer :: nr, nx, ny, n
+    
+    ! MPI variables
+    integer :: rank, nprocs, ierr
 
     contains 
 
@@ -20,7 +24,6 @@ module global_elements
 
             ! to use 
             logical :: is_found, inputs_right
-            real :: id_number
 
             ! initialization
             inputs_right = .true.
@@ -32,23 +35,32 @@ module global_elements
             call json%get('name', name_execution, is_found); if(.not. is_found) name_execution = 'current_task'
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verify structure inputs')
+            if (.not. inputs_right) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if 
+
+            end if 
 
             ! remove whitespaces of the name execution
             call strip_spaces(name_execution)
 
-            ! execution id 
-            call random_number(id_number)
-            write(id_execution, "(I10.10)") floor(id_number * 1e9)
-
             ! name output folder
             name_output_folder = id_execution//'_'//name_execution
 
-            ! create output folder
-            call execute_command_line('mkdir wdir/'//trim(name_output_folder))
+            ! first parallel process
+            if (rank == 0) then 
 
-            ! open log file 
-            open(200, file='wdir/'//trim(name_output_folder)//'/photonics.log')
+                ! create output folder
+                call execute_command_line('mkdir wdir/'//trim(name_output_folder))
+
+                ! open log file 
+                open(200, file='wdir/'//trim(name_output_folder)//'/photonics.log')
+
+            end if
 
         end subroutine init 
 

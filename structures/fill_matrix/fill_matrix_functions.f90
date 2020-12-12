@@ -55,7 +55,15 @@ module fill_matrix_functions
                 call json%get('structure.random_movement.max_percentage', max_percentage_move, is_found); 
 
                 ! verify inputs json 
-                if (.not. is_found) call error_message('Verify structure inputs')
+                if (.not. is_found) then 
+
+                    if (rank == 0) then 
+                        call error_message('Verify structure inputs')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if
 
                 ! calculate random movement
                 do i = 1, size(centers_structure, 1)
@@ -79,7 +87,15 @@ module fill_matrix_functions
                 call json%get('structure.random_movement.max_percentage', max_percentage_move, is_found)
 
                 ! verify inputs json 
-                if (is_found) call error_message('Verify structure inputs')
+                if (is_found) then 
+
+                    if (rank == 0) then 
+                        call error_message('Verify structure inputs')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if
 
             end if 
 
@@ -94,7 +110,15 @@ module fill_matrix_functions
 
             ! get structure type
             call json%get('structure.type', structure_type, is_found)
-                if(.not. is_found) call error_message('Verify structure inputs')
+            if(.not. is_found) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if 
+            
+            end if
 
             ! initialization 
             ncenters_circles = 0 
@@ -140,7 +164,7 @@ module fill_matrix_functions
             ! to save 
             call json%get('saving.structure.status', to_save, is_found); if(.not. is_found) to_save = .false.
 
-            if (to_save) then 
+            if (to_save .and. rank == 0) then 
 
                 ! path files to structure and centers
                 path_file = 'wdir/'//name_output_folder//'/structure_'//structure_type//'_'//trim(id_file)//'.dat'
@@ -163,9 +187,6 @@ module fill_matrix_functions
                 end if 
 
             end if
-
-            !delete
-            print *, nx, ny
 
             ! deallocate
             if (ncenters_circles > 0) deallocate(centers_circles)

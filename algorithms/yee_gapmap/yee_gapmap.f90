@@ -87,7 +87,7 @@ module yee_gapmap
                 matrix_structure = fill_matrix(matrix_centers, id_file_opt=id_file) 
 
                 ! run yee
-                !call run_yee(matrix_structure, id_file_opt=id_file)
+                call run_yee(matrix_structure, id_file_opt=id_file)
 
                 ! allocate 
                 deallocate(matrix_structure)

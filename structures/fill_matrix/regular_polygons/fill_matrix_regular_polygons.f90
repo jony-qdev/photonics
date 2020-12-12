@@ -38,7 +38,15 @@ module fill_matrix_regular_polygons
             do l = 1, size(centers_structure, 1)
 
                 ! verify sides
-                if (int(centers_structure(l, 2)) < 3) call error_message('Bad centers, verify')
+                if (int(centers_structure(l, 2)) < 3) then 
+                    
+                    if (rank == 0) then 
+                        call error_message('Bad centers, verify')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if 
 
                 ! allocate
                 allocate(matrix_vertices(int(centers_structure(l, 2)), 2))
@@ -103,7 +111,15 @@ module fill_matrix_regular_polygons
                 end do  
 
                 ! verify if nr is correct
-                if (nvalid_points < centers_structure(l, 2)) call error_message('nr is too small or center outside the structure')
+                if (nvalid_points < centers_structure(l, 2)) then 
+
+                    if (rank == 0) then 
+                        call error_message('nr is too small or center outside the structure')
+                    else 
+                        call exit(0)
+                    end if 
+
+                end if
 
                 ! deallocate
                 deallocate(matrix_vertices)   

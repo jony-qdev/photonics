@@ -56,14 +56,58 @@ module bravais_moire
             call json%get('structure'//source_data//'.units', units, is_found); if(.not. is_found) inputs_right = .false.
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verify structure inputs')
+            if (.not. inputs_right) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if 
+            
+            end if
 
             ! verify r and s values 
-            if (r <= 1) call error_message('Verify r value')
-            if (s <= 0) call error_message('Verify s value')
-            if (s >= r) call error_message('Verify r and s values')
+            if (r <= 1) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify r value')
+                else 
+                    call exit(0)
+                end if 
+
+            end if 
+
+            if (s <= 0) then 
+                
+                if (rank == 0) then 
+                    call error_message('Verify s value')
+                else 
+                    call exit(0)
+                end if 
+            
+            end if
+            
+            if (s >= r) then 
+
+                if (rank == 0) then 
+                    call error_message('Verify r and s values')
+                else 
+                    call exit(0)
+                end if 
+            
+            end if
+
             call coprimes(r, s, are_coprimes)
-            if(.not. are_coprimes) call error_message('The numbers r and s are not coprimes')
+
+            if(.not. are_coprimes) then 
+                
+                if (rank == 0) then 
+                    call error_message('The numbers r and s are not coprimes')
+                else 
+                    call exit(0)
+                end if 
+            
+            end if
 
             ! rows and cols 
             t = 2 * r
@@ -244,7 +288,15 @@ module bravais_moire
             end if 
 
             ! verify inputs json 
-            if (.not. inputs_right) call error_message('Verify structure inputs')
+            if (.not. inputs_right) then 
+
+                if (rank == 0) then 
+                    call error_message('Verify structure inputs')
+                else 
+                    call exit(0)
+                end if
+
+            end if
 
             ! fix shape_param 
             if (.not. present(ff_opt)) then 
