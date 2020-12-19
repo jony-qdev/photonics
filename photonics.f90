@@ -69,7 +69,7 @@ program photonics
 
     call MPI_Barrier(MPI_COMM_WORLD, ierr)
 
-    if(rank /= 0 .and. job == 'yee_specific_values') then 
+    if(rank /= 0 .and. (job == 'yee_specific_values' .or. job == 'yee_gapmap')) then 
 
         write(rank_string, '(I4.4)') rank
 
@@ -157,7 +157,7 @@ program photonics
 
         call run_yee_gapmap()
 
-        if (rank == 0) call success_message('All tasks ran!')
+        if (rank == nprocs - 1) call success_message('All tasks ran!', rank_opt=rank)
     end select 
 
     call MPI_Barrier(MPI_COMM_WORLD, ierr)
@@ -165,7 +165,7 @@ program photonics
     ! close log file 
     if (rank == 0) then 
 
-        if (job == 'yee_specific_values') then 
+        if (job == 'yee_specific_values' .or. job == 'yee_gapmap') then 
 
             do i = 1, nprocs - 1
 

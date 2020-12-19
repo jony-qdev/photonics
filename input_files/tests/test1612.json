@@ -1,38 +1,36 @@
 {
-    "job": "yee_gapmap",
+    "job": "yee",
     "subjob": "tm",
 
-    "name": "yee_gapmap",
+    "name": "test1612",
 
     "structure": {
-        "type" : "circle_center",
-        "a" : 1e-6,
-        "nr" : 15,
+        "type" : "thue_morse",
+        "a": 1e-6,
+        "nr" : 20,
         "lambda" : 1.5e-6,
-        "eps_1" : 8.9
+        "n" : 3,
+
+        "substructure": {
+            "type": "circle_center",
+            "factor_radio" : 0.35, 
+            "eps_1" : 12.25
+        }
     },
 
     "parameters" : {
         "mu" : 1.0,
 
-        "filling_fraction": {
-            "start": 0.01, 
-            "finalize": 0.55,
-            "nfractions": 4
-        },
-
-        "minimum_width" : 0.01,
-
         "k" : {
             "path" : "rxmr",
-            "npoints" : 90
+            "npoints" : 45
         },
 
         "dimensions" : {
             "nt" : 65536
         },
 
-        "frequencies_per_k" : 100
+        "frequencies_per_k" : 500
     },
 
     "source" : {
@@ -44,7 +42,7 @@
 
     "settings": {
         "dispersion" :{
-            "setting_parameter": 1.111
+            "setting_parameter": 1.001
         }
     },
 
@@ -55,8 +53,8 @@
 
         "dispersion": {
             "status": true,
-            "xlim": [0, 3.0],
-            "ylim": [0.0, 1]
+            "xlim": [0.0, 3.0],
+            "ylim": [0.1, 0.45]
         }
     },
 

@@ -46,7 +46,7 @@ module yee
             real :: mu, k_add, dt, mu_x, mu_y, freq, omega, t, kx, ky,  re_rotate_x, im_rotate_x, re_rotate_y, im_rotate_y
             real, dimension(:), allocatable :: array_ks, array_frequencies, xlim, ylim
             real, dimension(:, :), allocatable :: matrix_eps_x, matrix_eps_y, matrix_dispersion, matrix_disp_local, matrix_kvalues
-            integer :: nt, nfreqs, k_npoints, k, q, k_npoints_local, i, diff_k_npoints
+            integer :: nt, nfreqs, k_npoints, k, q, k_npoints_local, i, diff_k_npoints, start_kloop, end_kloop
             logical :: is_found, inputs_right, to_plot, has_xlim, has_ylim
             character(len=:), allocatable :: source_type, subjob, id_file, path_file, path_plot
             character(len=5) :: str_k, str_freq
@@ -79,9 +79,12 @@ module yee
                 call json%get('parameters.k.npoints', k_npoints, is_found); if (.not. is_found) inputs_right = .false.
                 call json%get('parameters.k.add_to_kpath', k_add, is_found); if(.not. is_found) k_add = 0.0
 
-                k_npoints_local = ceiling(k_npoints / float(nprocs))
-                k_npoints = nprocs * k_npoints_local
-                diff_k_npoints = 0
+
+                if (job == 'yee') then 
+                    k_npoints_local = ceiling(k_npoints / float(nprocs))
+                    k_npoints = nprocs * k_npoints_local
+                    diff_k_npoints = 0
+                end if 
 
             case ('yee_specific_values')
 
@@ -150,7 +153,7 @@ module yee
                     call exit(0)
                 end if 
 
-            end select 
+            end select
 
             ! type structure for getting excitement point and inputs
             select case(structure_type)
@@ -170,7 +173,7 @@ module yee
             allocate(matrix_eps_x(nx, ny), matrix_eps_y(nx, ny))
             allocate(matrix_z(nx, ny), matrix_x(nx, ny), matrix_y(nx, ny))
 
-            if (rank == 0) allocate(matrix_dispersion(k_npoints * nfreqs, 2))
+            if (rank == 0 .or. job == 'yee_gapmap') allocate(matrix_dispersion(k_npoints * nfreqs, 2))
             allocate(matrix_disp_local(k_npoints_local * nfreqs, 2))
 
             allocate(array_in_fft(nt))
@@ -204,7 +207,16 @@ module yee
             i = 0
 
             ! calculate yee for each k
-            do k = rank * (k_npoints_local - diff_k_npoints) + 1, rank * (k_npoints_local - diff_k_npoints) + k_npoints_local
+
+            if (job == 'yee_gapmap') then 
+                start_kloop = 1
+                end_kloop = k_npoints
+            else 
+                start_kloop = rank * (k_npoints_local - diff_k_npoints) + 1
+                end_kloop = rank * (k_npoints_local - diff_k_npoints) + k_npoints_local
+            end if 
+
+            do k = start_kloop, end_kloop 
 
                 ! calculate omega an freq
                 if (job == 'yee_specific_values') then 
@@ -258,11 +270,15 @@ module yee
 
                 ! calculate freqs to yee 
 
-                if (job == 'yee' .or. job == 'yee_gapmap') then 
+                if (job == 'yee') then 
 
                     call get_dispersion(matrix_disp_local, i, nt, dt, array_ks(k), nfreqs)
 
                     i = i + 1
+
+                else if (job == 'yee_gapmap') then 
+
+                    call get_dispersion(matrix_dispersion, k - 1, nt, dt, array_ks(k), nfreqs)
 
                 else 
 
@@ -319,14 +335,17 @@ module yee
                                 ierr)
             end if 
 
-            if ((job == 'yee' .or. job == 'yee_gapmap') .and. rank == 0) then 
+            if ((job == 'yee' .and. rank == 0) .or. job == 'yee_gapmap') then 
             
                 ! save dispersion 
                 path_file = 'wdir/'//name_output_folder//'/yee_'//subjob//'_dispersion_' &
                             //trim(structure_type)//'_'//trim(id_file)//'.dat'
 
-
-                call save_xy_plot(path_file, matrix_dispersion, k_npoints * nfreqs, add_x_opt=k_add)
+                if (job == 'yee_gapmap') then 
+                    call save_xy_plot(path_file, matrix_dispersion, k_npoints * nfreqs, add_x_opt=k_add, rank_opt=rank)
+                else 
+                    call save_xy_plot(path_file, matrix_dispersion, k_npoints * nfreqs, add_x_opt=k_add)
+                end if 
 
                 ! plot dispersion
 
@@ -342,14 +361,15 @@ module yee
                     call json%get('plots.dispersion.ylim', ylim, has_ylim)
 
                     ! plot
+                    
                     if (has_xlim .and. has_ylim) then 
-                        call plot_xy(path_file, path_plot, xlim, ylim)
+                        call plot_xy(path_file, path_plot, xlim, ylim, rank_opt=rank)
                     else if (has_xlim) then 
-                        call plot_xy(path_file, path_plot, xlim_opt=xlim)
+                        call plot_xy(path_file, path_plot, xlim_opt=xlim, rank_opt=rank)
                     else if (has_ylim) then 
-                        call plot_xy(path_file, path_plot, ylim_opt=ylim)
+                        call plot_xy(path_file, path_plot, ylim_opt=ylim, rank_opt=rank)
                     else 
-                        call plot_xy(path_file, path_plot)
+                        call plot_xy(path_file, path_plot, rank_opt=rank)
                     end if 
 
                 end if 
@@ -361,7 +381,7 @@ module yee
             end if
 
             ! deallocate
-            if (rank == 0) deallocate(matrix_dispersion)
+            if (rank == 0 .or. job == 'yee_gapmap') deallocate(matrix_dispersion)
             deallocate(matrix_disp_local)
             deallocate(matrix_eps_x, matrix_eps_y, matrix_kvalues)
 	        deallocate(matrix_z, matrix_x, matrix_y)

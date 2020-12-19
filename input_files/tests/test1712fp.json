@@ -1,0 +1,56 @@
+{
+    "job": "yee_specific_values",
+    "subjob": "tm",
+
+    "name": "testThueMorseFieldProfile",
+
+    "structure": {
+        "type" : "thue_morse",
+        "a": 1e-6,
+        "nr" : 20,
+        "lambda" : 1.5e-6,
+        "n" : 3,
+
+        "substructure": {
+            "type": "circle_center",
+            "factor_radio" : 0.35, 
+            "eps_1" : 12.25
+        }
+    },
+
+    "parameters" : {
+        "mu" : 1.0,
+
+        "specific_ks": [0.0, 0.0, 0.0, 0.0],
+        "specific_frequencies": [0.1858723, 0.226567939, 0.338842, 0.3812691],
+
+        "dimensions" : {
+            "nt" : 1048576
+        },
+
+        "frequencies_per_k" : 100
+    },
+
+    "source" : {
+        "type" : "gaussian_source",
+        "width" : 1e-25,
+        "start_time" : 0.5e-12,
+        "amplitude" : 5.0
+    },
+
+    "plots": {
+        "structure": {
+            "status": true
+        },
+
+        "field_profile": {
+            "status": true
+        }
+    },
+
+    "saving": {
+        "structure": {
+            "status": true
+        }
+    }
+}

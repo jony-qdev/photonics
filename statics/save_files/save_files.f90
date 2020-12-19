@@ -78,17 +78,26 @@ module save_files
         ! Returns:
         !   --| file with structure with columns --> x, y
 
-        subroutine save_xy_plot(path_file, matrix, rows, add_x_opt)
+        subroutine save_xy_plot(path_file, matrix, rows, add_x_opt, rank_opt)
 
             ! inputs
             character(len=*), intent(in) :: path_file 
             real, dimension(:, :), intent(in) :: matrix
             integer, intent(in) :: rows 
+            integer, optional :: rank_opt
             real, optional :: add_x_opt
 
+
             ! variables to use
-            integer :: i
+            integer :: i, rank
             real :: add_x
+
+            ! verify rank 
+            if (present(rank_opt)) then 
+                rank = rank_opt 
+            else 
+                rank = 0 
+            end if
 
             ! verify add x
             if (present(add_x_opt)) then 
@@ -98,18 +107,18 @@ module save_files
             end if
 
             ! open file 
-            open(100, file=path_file)
+            open(100 + rank, file=path_file)
 
                 ! traverse matrix and save in the file
                 do i = 1, rows 
 
-                    write(100, *) matrix(i, 1) + add_x, matrix(i, 2)
+                    write(100 + rank, *) matrix(i, 1) + add_x, matrix(i, 2)
 
                 end do
 
-            close(100)
+            close(100 + rank)
 
-            call success_message('Generated '//path_file)
+            call success_message('Generated '//path_file, rank_opt=rank)
 
         end subroutine save_xy_plot
 

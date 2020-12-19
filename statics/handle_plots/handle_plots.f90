@@ -70,38 +70,49 @@ module handle_plots
         ! Returns:
         !   --| file in png with xy plot and gnuplot file to execute and generate this image
 
-        subroutine plot_xy(path_file, path_plot, xlim_opt, ylim_opt)
+        subroutine plot_xy(path_file, path_plot, xlim_opt, ylim_opt, rank_opt)
 
             ! inputs
             character(len=*), intent(in) :: path_file, path_plot
             real, dimension(2), optional:: xlim_opt, ylim_opt
+            integer, optional :: rank_opt 
+
+            ! to use 
+            integer rank 
+
+            !verify rank 
+            if (present(rank_opt)) then 
+                rank = rank_opt
+            else 
+                rank = 0
+            end if 
 
             ! open file plt (gnuplot file)
-            open(100, file=path_plot//'.plt')
+            open(100 + rank, file=path_plot//'.plt')
 
                 ! write gnuplot configuration to plot structure
-                write(100, *) 'set term png'
-                write(100, *) "set output '"//trim(path_plot)//".png'"
+                write(100 + rank, *) 'set term png'
+                write(100 + rank, *) "set output '"//trim(path_plot)//".png'"
 
-                if (present(xlim_opt)) write(100, *) 'set xrange [', xlim_opt(1), ':', xlim_opt(2),']'
-                if (present(ylim_opt)) write(100, *) 'set yrange [', ylim_opt(1), ':', ylim_opt(2),']'
+                if (present(xlim_opt)) write(100 + rank, *) 'set xrange [', xlim_opt(1), ':', xlim_opt(2),']'
+                if (present(ylim_opt)) write(100 + rank, *) 'set yrange [', ylim_opt(1), ':', ylim_opt(2),']'
 
-                write(100, *) 'set grid'
-                write(100, *) 'set ylabel "Frequency"'
-                write(100, *) 'set xlabel "K Values"'
+                write(100 + rank, *) 'set grid'
+                write(100 + rank, *) 'set ylabel "Frequency"'
+                write(100 + rank, *) 'set xlabel "K Values"'
 
-                write(100, *) "plot '"//path_file//"' with points pt 7"
+                write(100 + rank, *) "plot '"//path_file//"' with points pt 7"
 
-            close(100)
+            close(100 + rank)
 
             ! message of success plt file
-            call success_message('Generated '//trim(path_plot)//'.plt')
+            call success_message('Generated '//trim(path_plot)//'.plt', rank_opt=rank)
 
             ! execute gnuplot file to generate png image
             call execute_command_line("gnuplot -p '"//trim(path_plot)//".plt'")
 
             ! message of success png file
-            call success_message('Generated '//trim(path_plot)//'.png')
+            call success_message('Generated '//trim(path_plot)//'.png', rank_opt=rank)
 
         end subroutine plot_xy
 

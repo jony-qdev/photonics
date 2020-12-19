@@ -164,17 +164,25 @@ module fill_matrix_functions
             ! to save 
             call json%get('saving.structure.status', to_save, is_found); if(.not. is_found) to_save = .false.
 
-            if (to_save .and. rank == 0) then 
+            if (to_save .and. (rank == 0 .or. job == 'yee_gapmap')) then 
 
                 ! path files to structure and centers
                 path_file = 'wdir/'//name_output_folder//'/structure_'//structure_type//'_'//trim(id_file)//'.dat'
                 path_centers_file = 'wdir/'//name_output_folder//'/centers_'//structure_type//'_'//trim(id_file)//'.dat'
 
                 ! save structure
-                call save_structure(path_file, matrix_structure, nx, ny, dx, dy, space_each_x_opt=.true.)
+                if (job == 'yee_gapmap') then 
+                    call save_structure(path_file, matrix_structure, nx, ny, dx, dy, space_each_x_opt=.true., rank_opt=rank)
+                else 
+                    call save_structure(path_file, matrix_structure, nx, ny, dx, dy, space_each_x_opt=.true.)
+                end if
 
                 ! save centers
-                call save_xy_plot(path_centers_file, centers_structure(:, 4:5), size(centers_structure, 1))
+                if (job == 'yee_gapmap') then
+                    call save_xy_plot(path_centers_file, centers_structure(:, 4:5), size(centers_structure, 1), rank_opt=rank)
+                else 
+                    call save_xy_plot(path_centers_file, centers_structure(:, 4:5), size(centers_structure, 1))
+                end if 
 
                 ! to plot
                 call json%get('plots.structure.status', to_plot, is_found); if(.not. is_found) to_plot = .false.
@@ -182,7 +190,11 @@ module fill_matrix_functions
                 if (to_plot) then 
                     path_plot = 'wdir/'//name_output_folder//'/plot_structure_'//structure_type//'_'//trim(id_file)
 
-                    call plot_structure(path_file, path_plot)
+                    if (job == 'yee_gapmap') then 
+                        call plot_structure(path_file, path_plot, rank_opt=rank)
+                    else 
+                        call plot_structure(path_file, path_plot)
+                    end if 
 
                 end if 
 

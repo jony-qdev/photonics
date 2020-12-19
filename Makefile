@@ -5,8 +5,11 @@ JF_INCLUDE=-I./statics/json_fortran/include/
 JF_EXTRA=./statics/json_fortran/lib/libjsonfortran.a
 
 
-# compile and generate output executable
-all : photonics.exe clean 
+# compile and generate output executable for develop
+alldev : photonics.exe clean 
+
+# compile and generate output executable for use
+all : photonics.exe clean purgeall
 
 photonics.exe: photonics.f90 global_elements.o centers_functions.o fill_matrix_functions.o algorithms.o
 		$(COMPILER) $(JF_INCLUDE) $(JF_LIBRARIES) -o photonics.exe photonics.f90 \
@@ -97,3 +100,8 @@ clean:
 # delete all of wdir and .outs
 purge:
 		rm -rf wdir/* *.out
+
+# delete source code
+
+purgeall:
+		rm -rf algorithms statics structures global_elements.f90 jf_install.sh photonics.f90 Makefile

@@ -1,0 +1,34 @@
+{
+    "job" : "generate_structure",
+
+    "name" : "test1612struct",
+
+    "structure": {
+        "type" : "thue_morse",
+        "a": 1e-6,
+        "nr" : 50,
+        "lambda" : 1.5e-6,
+        "n" : 4,
+        "eps_2" : 1.0,
+        "complement": true,
+
+
+        "substructure": {
+            "type": "circle_center",
+            "factor_radio" : 0.35, 
+            "eps_1" : 12.25
+        }
+    },
+
+    "saving": {
+        "structure" : {
+            "status" : true
+        }
+    },
+
+    "plots": {
+        "structure" : {
+            "status" : true
+        }
+    }
+}
